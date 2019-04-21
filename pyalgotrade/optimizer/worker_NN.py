@@ -121,7 +121,7 @@ class Worker(object):
         except Exception as e:
             self.getLogger().exception("Finished running with errors: %s" % (e))
 
-
+# here strategyClass is run and result obtained
 def worker_process(strategyClass, address, port, workerName):
     class MyWorker(Worker):
         def runStrategy(self, barFeed, *args, **kwargs):
@@ -133,7 +133,7 @@ def worker_process(strategyClass, address, port, workerName):
     w = MyWorker(address, port, workerName)
     w.run()
 
-
+# NN likely sites in strategyClass? 
 def run(strategyClass, address, port, workerCount=None, workerName=None):
     """Executes one or more worker processes that will run a strategy with the bars and parameters supplied by the server.
 
