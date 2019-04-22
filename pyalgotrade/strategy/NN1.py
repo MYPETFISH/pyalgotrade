@@ -7,14 +7,19 @@ from pyalgotrade.technical import cross
 # onBars is entry operation
 # should NN be persisted longe? 
 # I.e. is strategy initiated once per server call and instance reused? 
-class RSI2(strategy.BacktestingStrategy):
+class NN1(strategy.BacktestingStrategy):
+    
     def __init__(self, feed, instrument, entrySMA, exitSMA, rsiPeriod, overBoughtThreshold, overSoldThreshold):
-        super(RSI2, self).__init__(feed)
+        super(NN1, self).__init__(feed)
         self.__instrument = instrument
+        
         # We'll use adjusted close values, if available, instead of regular close values.
         if feed.barsHaveAdjClose():
             self.setUseAdjustedValues(True)
+        
         self.__priceDS = feed[instrument].getPriceDataSeries()
+        
+        # inherited from RSI2
         self.__entrySMA = ma.SMA(self.__priceDS, entrySMA)
         self.__exitSMA = ma.SMA(self.__priceDS, exitSMA)
         self.__rsi = rsi.RSI(self.__priceDS, rsiPeriod)
@@ -52,12 +57,17 @@ class RSI2(strategy.BacktestingStrategy):
         # If the exit was canceled, re-submit it.
         position.exitMarket()
 
+    # entry into logic, decides:
+    #    i) when sufficient data to train/act
+    #    ii) action to take
     def onBars(self, bars): # overrides strategy.BaseStrategy
         # Wait for enough bars to be available to calculate SMA and RSI.
         if self.__exitSMA[-1] is None or self.__entrySMA[-1] is None or self.__rsi[-1] is None:
             return
 
         bar = bars[self.__instrument]
+
+        # below is RSI2 logic, replace with NN logic
         if self.__longPos is not None:
             if self.exitLongSignal():
                 self.__longPos.exitMarket()
